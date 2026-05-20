@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   SectionContainer,
   ContentWrapper,
@@ -13,19 +12,17 @@ import {
 } from '@/components/ui';
 import { ROUTE_PATHS } from '@/config/routes';
 import { ANIMATION } from '@/constants/theme';
-import {
-  Activity,
-  Brain,
-  Microscope,
+import { 
+  Stethoscope, 
+  User, 
+  Activity, 
+  Brain, 
+  LineChart, 
+  Heart, 
   Sparkles,
-  TrendingUp,
-  Users,
-  Heart,
-  Shield,
-  Zap,
-  BarChart3,
-  Stethoscope,
-  FlaskConical,
+  ArrowRight,
+  Microscope,
+  Shield
 } from 'lucide-react';
 
 const stats = [
@@ -82,200 +79,39 @@ const trustLogos = [
   'Stanford Health',
 ];
 
-// Floating particle component
-function FloatingParticle({ delay = 0, duration = 20, x = 0, y = 0 }: { delay?: number; duration?: number; x?: number; y?: number }) {
-  return (
-    <motion.div
-      className="absolute w-1 h-1 bg-cyan-400/30 rounded-full"
-      initial={{ opacity: 0, x, y }}
-      animate={{
-        opacity: [0, 1, 0],
-        y: [y, y - 100],
-        x: [x, x + Math.random() * 50 - 25],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: 'linear',
-      }}
-    />
-  );
-}
-
-// Interactive Entry Card Component
-interface EntryCardProps {
-  type: 'doctor' | 'patient';
-  title: string;
-  subtitle: string;
-  features: string[];
-  icon: React.ReactNode;
-  gradient: string;
-  link: string;
-}
-
-function EntryCard({ type, title, subtitle, features, icon, gradient, link }: EntryCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const rotateX = useTransform(mouseY, [-300, 300], [5, -5]);
-  const rotateY = useTransform(mouseX, [-300, 300], [-5, 5]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    mouseX.set(e.clientX - centerX);
-    mouseY.set(e.clientY - centerY);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-    setIsHovered(false);
-  };
-
-  return (
-    <Link to={link}>
-      <motion.div
-        className="relative h-full"
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
-        }}
-        whileHover={{ scale: 1.02 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      >
-        {/* Glow effect */}
-        <motion.div
-          className={`absolute -inset-1 rounded-3xl opacity-0 blur-xl ${gradient}`}
-          animate={{
-            opacity: isHovered ? 0.6 : 0,
-          }}
-          transition={{ duration: 0.3 }}
-        />
-
-        {/* Main card */}
-        <div className="relative h-full bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/20 overflow-hidden shadow-2xl">
-          {/* Animated gradient overlay */}
-          <motion.div
-            className={`absolute inset-0 opacity-10 ${gradient}`}
-            animate={{
-              backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%',
-            }}
-            transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
-            style={{ backgroundSize: '200% 200%' }}
-          />
-
-          {/* Animated border */}
-          <motion.div
-            className="absolute inset-0 rounded-3xl"
-            style={{
-              background: `linear-gradient(${isHovered ? '135deg' : '0deg'}, transparent 0%, rgba(6, 182, 212, 0.3) 50%, transparent 100%)`,
-            }}
-            animate={{
-              rotate: isHovered ? 360 : 0,
-            }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-          />
-
-          {/* Content */}
-          <div className="relative p-8 lg:p-10 h-full flex flex-col" style={{ transform: 'translateZ(50px)' }}>
-            {/* Icon */}
-            <motion.div
-              className={`w-20 h-20 rounded-2xl ${gradient} flex items-center justify-center mb-6 shadow-lg`}
-              animate={{
-                boxShadow: isHovered
-                  ? '0 20px 60px rgba(6, 182, 212, 0.4)'
-                  : '0 10px 30px rgba(6, 182, 212, 0.2)',
-              }}
-            >
-              <motion.div
-                animate={{ rotate: isHovered ? 360 : 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                {icon}
-              </motion.div>
-            </motion.div>
-
-            {/* Title */}
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-3">
-              {title}
-            </h2>
-            <p className="text-cyan-100 text-lg mb-8">{subtitle}</p>
-
-            {/* Features */}
-            <div className="space-y-4 mb-8 flex-1">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-start gap-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div className="mt-1 w-6 h-6 rounded-lg bg-cyan-400/20 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-3 h-3 text-cyan-300" />
-                  </div>
-                  <span className="text-white/90 text-sm leading-relaxed">{feature}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* CTA Button */}
-            <motion.div
-              className={`w-full py-4 rounded-xl ${gradient} flex items-center justify-center gap-2 font-semibold text-white shadow-lg`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span>Enter {type === 'doctor' ? 'Clinical' : 'Patient'} Portal</span>
-              <motion.div
-                animate={{ x: isHovered ? 5 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Zap className="w-5 h-5" />
-              </motion.div>
-            </motion.div>
-
-            {/* Floating particles inside card */}
-            {isHovered && (
-              <>
-                {[...Array(8)].map((_, i) => (
-                  <FloatingParticle
-                    key={i}
-                    delay={i * 0.2}
-                    duration={3}
-                    x={Math.random() * 300}
-                    y={400}
-                  />
-                ))}
-              </>
-            )}
-          </div>
-
-          {/* Corner accent */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-400/20 to-transparent rounded-bl-full" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-teal-400/20 to-transparent rounded-tr-full" />
-        </div>
-      </motion.div>
-    </Link>
-  );
-}
-
 function HeroSection() {
   return (
-    <div className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-cyan-950 to-teal-900">
-      {/* Animated background gradients */}
+    <div className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-cyan-950 to-teal-950">
+      {/* Animated background particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-400/30 rounded-full"
+            initial={{ 
+              x: Math.random() * window.innerWidth, 
+              y: Math.random() * window.innerHeight 
+            }}
+            animate={{
+              y: [null, Math.random() * window.innerHeight],
+              x: [null, Math.random() * window.innerWidth],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: Math.random() * 10 + 10,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Gradient orbs */}
       <motion.div
-        className="absolute top-0 right-0 w-[800px] h-[800px] bg-cyan-500/20 rounded-full blur-3xl"
+        className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl"
         animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
+          scale: [1, 1.3, 1],
+          opacity: [0.3, 0.6, 0.3],
         }}
         transition={{
           duration: 8,
@@ -284,10 +120,10 @@ function HeroSection() {
         }}
       />
       <motion.div
-        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/20 rounded-full blur-3xl"
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"
         animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.5, 0.3, 0.5],
+          scale: [1.3, 1, 1.3],
+          opacity: [0.6, 0.3, 0.6],
         }}
         transition={{
           duration: 8,
@@ -296,18 +132,7 @@ function HeroSection() {
         }}
       />
 
-      {/* Floating particles */}
-      {[...Array(20)].map((_, i) => (
-        <FloatingParticle
-          key={i}
-          delay={i * 0.5}
-          duration={15 + Math.random() * 10}
-          x={Math.random() * window.innerWidth}
-          y={window.innerHeight}
-        />
-      ))}
-
-      <ContentWrapper className="relative py-20 lg:py-24">
+      <ContentWrapper className="relative py-24 lg:py-32">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
@@ -316,157 +141,258 @@ function HeroSection() {
           className="text-center mb-16"
         >
           <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-xl mb-8"
-            animate={{
-              boxShadow: [
-                '0 0 20px rgba(6, 182, 212, 0.3)',
-                '0 0 40px rgba(6, 182, 212, 0.5)',
-                '0 0 20px rgba(6, 182, 212, 0.3)',
-              ],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
           >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-            >
-              <Sparkles className="w-5 h-5 text-cyan-400" />
-            </motion.div>
-            <span className="text-sm font-semibold text-cyan-300 tracking-wide">
-              AI-POWERED REGENERATIVE MEDICINE ECOSYSTEM
-            </span>
+            <Sparkles className="w-4 h-4 text-cyan-400" />
+            <span className="text-sm font-medium text-cyan-300">AI-Powered Regenerative Medicine Ecosystem</span>
           </motion.div>
-
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-white leading-[1.1] mb-6">
-            Enter the Future of
-            <br />
+          
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white leading-[1.1] mb-6">
+            Enter the Future of{' '}
             <span className="bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
               Healthcare
             </span>
           </h1>
-          <p className="text-xl sm:text-2xl text-cyan-100/80 max-w-3xl mx-auto leading-relaxed">
-            Advanced stem cell therapy powered by artificial intelligence
+          
+          <p className="text-lg sm:text-xl text-cyan-100/80 max-w-3xl mx-auto leading-relaxed">
+            Advanced stem cell therapy powered by artificial intelligence. Choose your path to regenerative healing.
           </p>
         </motion.div>
 
-        {/* Entry Cards - Desktop Split Screen */}
-        <div className="hidden lg:grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <EntryCard
-              type="doctor"
-              title="FOR DOCTORS"
-              subtitle="Clinical Intelligence Platform"
-              features={[
-                'Real-time clinical evidence & trial analytics',
-                'AI-powered diagnostic assistance',
-                'Advanced patient outcome predictions',
-                'Comprehensive research dashboards',
-                'Collaborative treatment protocols',
-              ]}
-              icon={<Stethoscope className="w-10 h-10 text-white" />}
-              gradient="bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600"
-              link={ROUTE_PATHS.DOCTORS}
-            />
-          </motion.div>
+        {/* Premium Entry Cards */}
+        <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+          {/* FOR DOCTORS CARD */}
+          <Link to={ROUTE_PATHS.DOCTORS}>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              whileHover={{ scale: 1.02, y: -8 }}
+              className="group relative h-[600px] rounded-3xl overflow-hidden cursor-pointer"
+            >
+              {/* Animated border */}
+              <motion.div
+                className="absolute inset-0 rounded-3xl"
+                animate={{
+                  background: [
+                    'linear-gradient(45deg, rgba(6, 182, 212, 0.5), rgba(20, 184, 166, 0.5))',
+                    'linear-gradient(90deg, rgba(20, 184, 166, 0.5), rgba(6, 182, 212, 0.5))',
+                    'linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(20, 184, 166, 0.5))',
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+              
+              {/* Glass card */}
+              <div className="absolute inset-[2px] rounded-3xl bg-gradient-to-br from-slate-900/95 via-cyan-950/95 to-slate-900/95 backdrop-blur-2xl p-8 flex flex-col">
+                {/* Icon header */}
+                <div className="flex items-center justify-between mb-8">
+                  <motion.div
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.8 }}
+                    className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-500/50"
+                  >
+                    <Stethoscope className="w-8 h-8 text-white" />
+                  </motion.div>
+                  
+                  <motion.div
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <ArrowRight className="w-6 h-6 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+                  </motion.div>
+                </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <EntryCard
-              type="patient"
-              title="FOR PATIENTS"
-              subtitle="Personalized Care Journey"
-              features={[
-                'AI-guided self-assessment tools',
-                'Personalized treatment roadmaps',
-                '24/7 intelligent health assistant',
-                'Real-time recovery tracking',
-                'Regenerative therapy education',
-              ]}
-              icon={<Heart className="w-10 h-10 text-white" />}
-              gradient="bg-gradient-to-br from-teal-500 via-emerald-600 to-cyan-600"
-              link={ROUTE_PATHS.PATIENTS}
-            />
-          </motion.div>
+                {/* Title */}
+                <div className="mb-6">
+                  <h2 className="text-4xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                    FOR DOCTORS
+                  </h2>
+                  <p className="text-cyan-100/70 text-lg">
+                    Advanced clinical intelligence platform
+                  </p>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-4 mb-8 flex-1">
+                  {[
+                    { icon: LineChart, text: 'Clinical Evidence & Research Analytics' },
+                    { icon: Brain, text: 'AI Doctor Assistant & Diagnostics' },
+                    { icon: Activity, text: 'Real-time Medical Dashboards' },
+                    { icon: Microscope, text: 'Advanced Treatment Protocols' },
+                  ].map((feature, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 + idx * 0.1 }}
+                      className="flex items-center gap-4 p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/10 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/30 transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-teal-500/20 flex items-center justify-center">
+                        <feature.icon className="w-5 h-5 text-cyan-400" />
+                      </div>
+                      <span className="text-cyan-50/90 font-medium">{feature.text}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Knee anatomy visualization */}
+                <div className="relative h-32 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-teal-500/10 border border-cyan-500/20 overflow-hidden">
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                  />
+                  <div className="relative h-full flex items-center justify-center">
+                    <motion.div
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-cyan-400/30 font-bold text-6xl"
+                    >
+                      🦴
+                    </motion.div>
+                    <div className="absolute bottom-3 left-4 text-xs text-cyan-400/60 font-medium">
+                      KNEE OSTEOARTHRITIS ANALYSIS
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hover glow effect */}
+                <motion.div
+                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: 'radial-gradient(circle at center, rgba(6, 182, 212, 0.1), transparent 70%)',
+                  }}
+                />
+              </div>
+            </motion.div>
+          </Link>
+
+          {/* FOR PATIENTS CARD */}
+          <Link to={ROUTE_PATHS.PATIENTS}>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              whileHover={{ scale: 1.02, y: -8 }}
+              className="group relative h-[600px] rounded-3xl overflow-hidden cursor-pointer"
+            >
+              {/* Animated border */}
+              <motion.div
+                className="absolute inset-0 rounded-3xl"
+                animate={{
+                  background: [
+                    'linear-gradient(45deg, rgba(20, 184, 166, 0.5), rgba(6, 182, 212, 0.5))',
+                    'linear-gradient(90deg, rgba(6, 182, 212, 0.5), rgba(20, 184, 166, 0.5))',
+                    'linear-gradient(135deg, rgba(20, 184, 166, 0.5), rgba(6, 182, 212, 0.5))',
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
+              />
+              
+              {/* Glass card */}
+              <div className="absolute inset-[2px] rounded-3xl bg-gradient-to-br from-slate-900/95 via-teal-950/95 to-slate-900/95 backdrop-blur-2xl p-8 flex flex-col">
+                {/* Icon header */}
+                <div className="flex items-center justify-between mb-8">
+                  <motion.div
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.8 }}
+                    className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/50"
+                  >
+                    <User className="w-8 h-8 text-white" />
+                  </motion.div>
+                  
+                  <motion.div
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <ArrowRight className="w-6 h-6 text-teal-400 group-hover:text-teal-300 transition-colors" />
+                  </motion.div>
+                </div>
+
+                {/* Title */}
+                <div className="mb-6">
+                  <h2 className="text-4xl font-bold text-white mb-3 group-hover:text-teal-300 transition-colors">
+                    FOR PATIENTS
+                  </h2>
+                  <p className="text-teal-100/70 text-lg">
+                    Personalized regenerative healing journey
+                  </p>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-4 mb-8 flex-1">
+                  {[
+                    { icon: Activity, text: 'Self Assessment & Eligibility Check' },
+                    { icon: Heart, text: 'AI Patient Assistant & Support' },
+                    { icon: Shield, text: 'Treatment Journey & Recovery' },
+                    { icon: Sparkles, text: 'Regenerative Medicine Guidance' },
+                  ].map((feature, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 + idx * 0.1 }}
+                      className="flex items-center gap-4 p-4 rounded-xl bg-teal-500/5 border border-teal-500/10 group-hover:bg-teal-500/10 group-hover:border-teal-500/30 transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-500/20 to-cyan-500/20 flex items-center justify-center">
+                        <feature.icon className="w-5 h-5 text-teal-400" />
+                      </div>
+                      <span className="text-teal-50/90 font-medium">{feature.text}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Regenerative medicine visualization */}
+                <div className="relative h-32 rounded-2xl bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/20 overflow-hidden">
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-teal-400/10 to-transparent"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'linear', delay: 1 }}
+                  />
+                  <div className="relative h-full flex items-center justify-center">
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 5, -5, 0]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="text-teal-400/30 font-bold text-6xl"
+                    >
+                      🧬
+                    </motion.div>
+                    <div className="absolute bottom-3 left-4 text-xs text-teal-400/60 font-medium">
+                      STEM CELL REGENERATION
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hover glow effect */}
+                <motion.div
+                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: 'radial-gradient(circle at center, rgba(20, 184, 166, 0.1), transparent 70%)',
+                  }}
+                />
+              </div>
+            </motion.div>
+          </Link>
         </div>
 
-        {/* Entry Cards - Mobile Stacked */}
-        <div className="lg:hidden space-y-6 max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <EntryCard
-              type="doctor"
-              title="FOR DOCTORS"
-              subtitle="Clinical Intelligence Platform"
-              features={[
-                'Real-time clinical evidence & trial analytics',
-                'AI-powered diagnostic assistance',
-                'Advanced patient outcome predictions',
-              ]}
-              icon={<Stethoscope className="w-10 h-10 text-white" />}
-              gradient="bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600"
-              link={ROUTE_PATHS.DOCTORS}
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <EntryCard
-              type="patient"
-              title="FOR PATIENTS"
-              subtitle="Personalized Care Journey"
-              features={[
-                'AI-guided self-assessment tools',
-                'Personalized treatment roadmaps',
-                '24/7 intelligent health assistant',
-              ]}
-              icon={<Heart className="w-10 h-10 text-white" />}
-              gradient="bg-gradient-to-br from-teal-500 via-emerald-600 to-cyan-600"
-              link={ROUTE_PATHS.PATIENTS}
-            />
-          </motion.div>
-        </div>
-
-        {/* Quick Stats */}
+        {/* Bottom info */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.7 }}
-          className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto"
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="text-center mt-16"
         >
-          {[
-            { icon: <Users className="w-6 h-6" />, value: '50K+', label: 'Patients Treated' },
-            { icon: <FlaskConical className="w-6 h-6" />, value: '15+', label: 'Years Research' },
-            { icon: <TrendingUp className="w-6 h-6" />, value: '98%', label: 'Success Rate' },
-            { icon: <Shield className="w-6 h-6" />, value: '100%', label: 'FDA Compliant' },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              className="relative group"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 text-cyan-400 mb-3">
-                  {stat.icon}
-                </div>
-                <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-sm text-cyan-200/70">{stat.label}</div>
-              </div>
-            </motion.div>
-          ))}
+          <div className="inline-flex items-center gap-2 text-cyan-300/60 text-sm">
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span>Powered by Advanced AI & Clinical Research</span>
+          </div>
         </motion.div>
       </ContentWrapper>
     </div>
@@ -475,7 +401,7 @@ function HeroSection() {
 
 function StatsSection() {
   return (
-    <SectionContainer className="bg-gradient-to-b from-slate-900 to-slate-800 border-y border-cyan-500/20">
+    <SectionContainer className="bg-white border-y border-neutral-100">
       <ContentWrapper>
         <motion.div
           initial={{ opacity: 0 }}
@@ -483,23 +409,8 @@ function StatsSection() {
           viewport={{ once: true }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-8"
         >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="relative group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent mb-2">
-                  {stat.value}{stat.suffix}
-                </div>
-                <div className="text-sm text-cyan-200/70">{stat.label}</div>
-              </div>
-            </motion.div>
+          {stats.map((stat) => (
+            <StatCard key={stat.label} {...stat} />
           ))}
         </motion.div>
       </ContentWrapper>
@@ -509,7 +420,7 @@ function StatsSection() {
 
 function FeaturesSection() {
   return (
-    <SectionContainer className="bg-slate-800">
+    <SectionContainer>
       <ContentWrapper>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -517,25 +428,14 @@ function FeaturesSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <motion.div
-            className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-xl mb-6"
-            animate={{
-              boxShadow: [
-                '0 0 20px rgba(6, 182, 212, 0.2)',
-                '0 0 30px rgba(6, 182, 212, 0.4)',
-                '0 0 20px rgba(6, 182, 212, 0.2)',
-              ],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-          >
-            <Brain className="w-4 h-4 text-cyan-400" />
-            <span className="text-sm font-semibold text-cyan-300">AI-ENHANCED CAPABILITIES</span>
-          </motion.div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-primary-50 text-primary-700 text-sm font-medium mb-4">
+            Why CiploStem
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900">
             Advanced Regenerative Solutions
           </h2>
-          <p className="text-xl text-cyan-100/70 max-w-3xl mx-auto">
-            Combining cutting-edge science with AI-powered personalization
+          <p className="mt-4 text-lg text-neutral-600 max-w-2xl mx-auto">
+            Combining cutting-edge science with personalized care to deliver transformative outcomes.
           </p>
         </motion.div>
 
@@ -546,21 +446,14 @@ function FeaturesSection() {
           viewport={{ once: true }}
           className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              className="relative group"
-              whileHover={{ y: -5 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 h-full">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/20 flex items-center justify-center text-cyan-400 mb-5 group-hover:scale-110 transition-transform">
-                  {feature.icon}
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-3">{feature.title}</h3>
-                <p className="text-sm text-cyan-100/60 leading-relaxed">{feature.description}</p>
+          {features.map((feature) => (
+            <FeatureCard key={feature.title}>
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-50 to-teal-50 flex items-center justify-center text-primary-600 mb-5">
+                {feature.icon}
               </div>
-            </motion.div>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">{feature.title}</h3>
+              <p className="text-sm text-neutral-600 leading-relaxed">{feature.description}</p>
+            </FeatureCard>
           ))}
         </motion.div>
       </ContentWrapper>
@@ -570,7 +463,7 @@ function FeaturesSection() {
 
 function ImageSplitSection() {
   return (
-    <SectionContainer className="bg-gradient-to-b from-slate-800 to-slate-900">
+    <SectionContainer className="bg-neutral-50">
       <ContentWrapper>
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <motion.div
@@ -580,21 +473,17 @@ function ImageSplitSection() {
             transition={{ duration: 0.5 }}
             className="relative"
           >
-            <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-cyan-500/20">
+            <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
               <img
                 src="/images/doctor-patient.jpg"
                 alt="Doctor consulting with patient"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/50 via-transparent to-transparent" />
             </div>
-            <motion.div
-              className="absolute -bottom-6 -right-6 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-2xl p-6 shadow-2xl"
-              whileHover={{ scale: 1.05 }}
-            >
-              <p className="text-4xl font-bold text-white">15+</p>
-              <p className="text-sm text-cyan-100 mt-1">Years of Excellence</p>
-            </motion.div>
+            <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-xl border border-neutral-100">
+              <p className="text-3xl font-bold text-primary-600">15+</p>
+              <p className="text-sm text-neutral-500 mt-1">Years of Excellence</p>
+            </div>
           </motion.div>
 
           <motion.div
@@ -603,45 +492,42 @@ function ImageSplitSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 mb-6">
-              <Microscope className="w-4 h-4 text-cyan-400" />
-              <span className="text-sm font-semibold text-cyan-300">OUR APPROACH</span>
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-6">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary-50 text-primary-700 text-sm font-medium mb-4">
+              About Our Approach
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 leading-tight">
               Redefining Healthcare Through Regeneration
             </h2>
-            <p className="text-lg text-cyan-100/70 leading-relaxed mb-8">
+            <p className="mt-6 text-neutral-600 leading-relaxed">
               At CiploStem, we harness the body's natural healing capabilities through advanced stem cell therapies. Our multidisciplinary team of researchers and clinicians work together to develop personalized treatment protocols.
             </p>
-            <div className="space-y-4 mb-10">
+            <div className="mt-8 space-y-4">
               {[
                 'Autologous stem cell harvesting and therapy',
                 'Allogeneic mesenchymal stem cell treatments',
                 'Comprehensive patient eligibility assessment',
                 'Post-treatment monitoring and support',
               ].map((item) => (
-                <motion.div
-                  key={item}
-                  className="flex items-start gap-3"
-                  whileHover={{ x: 5 }}
-                >
-                  <div className="mt-1 w-6 h-6 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                    <Activity className="w-3 h-3 text-cyan-400" />
+                <div key={item} className="flex items-start gap-3">
+                  <div className="mt-1 w-5 h-5 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-3 h-3 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
-                  <span className="text-cyan-100/80">{item}</span>
-                </motion.div>
+                  <span className="text-neutral-700">{item}</span>
+                </div>
               ))}
             </div>
-            <Link to={ROUTE_PATHS.ABOUT}>
-              <motion.button
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-semibold shadow-lg flex items-center gap-2"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Learn About Our Research
-                <Zap className="w-5 h-5" />
-              </motion.button>
-            </Link>
+            <div className="mt-10">
+              <Link to={ROUTE_PATHS.ABOUT}>
+                <PrimaryButton>
+                  Learn About Our Research
+                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </PrimaryButton>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </ContentWrapper>
@@ -651,7 +537,7 @@ function ImageSplitSection() {
 
 function AIAssistantPreview() {
   return (
-    <SectionContainer className="bg-slate-900">
+    <SectionContainer>
       <ContentWrapper>
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <motion.div
@@ -660,47 +546,38 @@ function AIAssistantPreview() {
             viewport={{ once: true }}
             className="order-2 lg:order-1"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 mb-6">
-              <Brain className="w-4 h-4 text-cyan-400" />
-              <span className="text-sm font-semibold text-cyan-300">AI-POWERED</span>
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-6">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary-50 text-primary-700 text-sm font-medium mb-4">
+              AI-Powered
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 leading-tight">
               Your Intelligent Healthcare Companion
             </h2>
-            <p className="text-lg text-cyan-100/70 leading-relaxed mb-8">
+            <p className="mt-6 text-neutral-600 leading-relaxed">
               Our AI assistant provides personalized guidance on stem cell therapy options, answers your medical questions, and helps navigate your treatment journey with evidence-based information.
             </p>
-            <div className="grid grid-cols-2 gap-4 mb-10">
+            <div className="mt-8 grid grid-cols-2 gap-4">
               {[
-                { title: 'Instant Answers', desc: 'Get responses in seconds', icon: <Zap className="w-4 h-4" /> },
-                { title: 'Personalized', desc: 'Tailored recommendations', icon: <Heart className="w-4 h-4" /> },
-                { title: 'Evidence-Based', desc: 'Clinical research backed', icon: <FlaskConical className="w-4 h-4" /> },
-                { title: '24/7 Available', desc: 'Always here to help', icon: <Shield className="w-4 h-4" /> },
+                { title: 'Instant Answers', desc: 'Get responses to your healthcare questions in seconds' },
+                { title: 'Personalized', desc: 'Tailored recommendations based on your profile' },
+                { title: 'Evidence-Based', desc: 'All information backed by clinical research' },
+                { title: '24/7 Available', desc: 'Access support whenever you need it' },
               ].map((item) => (
-                <motion.div
-                  key={item.title}
-                  className="relative group"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xl">
-                    <div className="text-cyan-400 mb-2">{item.icon}</div>
-                    <h4 className="font-semibold text-white text-sm mb-1">{item.title}</h4>
-                    <p className="text-xs text-cyan-100/60">{item.desc}</p>
-                  </div>
-                </motion.div>
+                <div key={item.title} className="p-4 rounded-xl bg-neutral-50 border border-neutral-100">
+                  <h4 className="font-semibold text-neutral-800 text-sm">{item.title}</h4>
+                  <p className="text-xs text-neutral-500 mt-1">{item.desc}</p>
+                </div>
               ))}
             </div>
-            <Link to={ROUTE_PATHS.AI_ASSISTANT}>
-              <motion.button
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-semibold shadow-lg flex items-center gap-2"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Chat with AI Assistant
-                <Sparkles className="w-5 h-5" />
-              </motion.button>
-            </Link>
+            <div className="mt-10">
+              <Link to={ROUTE_PATHS.AI_ASSISTANT}>
+                <PrimaryButton>
+                  Chat with AI Assistant
+                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </PrimaryButton>
+              </Link>
+            </div>
           </motion.div>
 
           <motion.div
@@ -709,78 +586,58 @@ function AIAssistantPreview() {
             viewport={{ once: true }}
             className="order-1 lg:order-2"
           >
-            <div className="relative bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-3xl p-6 lg:p-8 border border-cyan-500/20">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
-                <div className="bg-gradient-to-r from-cyan-500 to-teal-500 p-4">
+            <div className="relative bg-gradient-to-br from-primary-50 to-teal-50 rounded-3xl p-6 lg:p-8">
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div className="bg-gradient-to-r from-primary-500 to-teal-500 p-4">
                   <div className="flex items-center gap-3">
-                    <motion.div
-                      className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                    >
-                      <Sparkles className="w-5 h-5 text-white" />
-                    </motion.div>
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">AI</span>
+                    </div>
                     <div>
                       <p className="text-sm font-semibold text-white">CiploStem AI</p>
-                      <p className="text-xs text-cyan-100">Healthcare Assistant</p>
+                      <p className="text-xs text-primary-100">Healthcare Assistant</p>
                     </div>
-                    <div className="ml-auto flex items-center gap-2">
-                      <motion.div
-                        className="w-2 h-2 rounded-full bg-green-300"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                      <span className="text-xs text-cyan-100">Online</span>
+                    <div className="ml-auto flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-green-300" />
+                      <span className="text-xs text-primary-100">Online</span>
                     </div>
                   </div>
                 </div>
-                <div className="p-6 space-y-4 bg-slate-900/50">
-                  <motion.div
-                    className="flex gap-3"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-4 h-4 text-white" />
+                <div className="p-6 space-y-4">
+                  <div className="flex gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary-700 text-xs font-bold">AI</span>
                     </div>
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl rounded-tl-md px-4 py-3 border border-white/10">
-                      <p className="text-sm text-cyan-100">Hello! I'm your CiploStem AI assistant. How can I help you with stem cell therapy today?</p>
+                    <div className="bg-neutral-50 rounded-2xl rounded-tl-md px-4 py-3">
+                      <p className="text-sm text-neutral-700">Hello! I'm your CiploStem AI assistant. How can I help you with stem cell therapy today?</p>
                     </div>
-                  </motion.div>
-                  <motion.div
-                    className="flex gap-3 justify-end"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <div className="bg-gradient-to-r from-cyan-500 to-teal-500 rounded-2xl rounded-tr-md px-4 py-3">
+                  </div>
+                  <div className="flex gap-3 justify-end">
+                    <div className="bg-primary-500 rounded-2xl rounded-tr-md px-4 py-3">
                       <p className="text-sm text-white">What conditions can stem cell therapy treat?</p>
                     </div>
-                  </motion.div>
-                  <motion.div
-                    className="flex gap-3"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary-700 text-xs font-bold">AI</span>
                     </div>
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl rounded-tl-md px-4 py-3 border border-white/10">
-                      <p className="text-sm text-cyan-100">Stem cell therapy can help treat orthopedic conditions, autoimmune disorders, neurological conditions, and cardiovascular diseases.</p>
+                    <div className="bg-neutral-50 rounded-2xl rounded-tl-md px-4 py-3">
+                      <p className="text-sm text-neutral-700">Stem cell therapy can help treat orthopedic conditions, autoimmune disorders, neurological conditions, and cardiovascular diseases. Would you like to know more about any specific area?</p>
                     </div>
-                  </motion.div>
+                  </div>
                 </div>
-                <div className="px-6 pb-6 bg-slate-900/50">
-                  <div className="flex items-center gap-2 p-3 bg-white/5 rounded-xl border border-white/10 backdrop-blur-xl">
+                <div className="px-6 pb-6">
+                  <div className="flex items-center gap-2 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
                     <input
                       type="text"
                       placeholder="Ask about stem cell therapy..."
-                      className="flex-1 bg-transparent text-sm outline-none placeholder-cyan-300/40 text-cyan-100"
+                      className="flex-1 bg-transparent text-sm outline-none placeholder-neutral-400"
                       readOnly
                     />
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                      </svg>
                     </div>
                   </div>
                 </div>
@@ -795,7 +652,7 @@ function AIAssistantPreview() {
 
 function TrustSection() {
   return (
-    <SectionContainer className="bg-slate-800 border-y border-cyan-500/20">
+    <SectionContainer className="bg-neutral-50">
       <ContentWrapper>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -803,18 +660,17 @@ function TrustSection() {
           viewport={{ once: true }}
           className="text-center"
         >
-          <p className="text-sm font-medium text-cyan-300/60 mb-8">
+          <p className="text-sm font-medium text-neutral-500 mb-8">
             Trusted by leading healthcare institutions worldwide
           </p>
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16">
             {trustLogos.map((name) => (
-              <motion.div
+              <div
                 key={name}
-                className="px-8 py-4 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg"
-                whileHover={{ scale: 1.05, borderColor: 'rgba(6, 182, 212, 0.3)' }}
+                className="px-6 py-3 bg-white rounded-xl border border-neutral-100 shadow-sm"
               >
-                <span className="text-lg font-bold text-cyan-400/40 tracking-wide">{name}</span>
-              </motion.div>
+                <span className="text-lg font-bold text-neutral-300 tracking-wide">{name}</span>
+              </div>
             ))}
           </div>
         </motion.div>
